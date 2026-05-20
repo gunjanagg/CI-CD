@@ -1,0 +1,55 @@
+In our organization, we follow a standardized and reusable CI/CD pipeline architecture for deploying applications across multiple platforms such as on-prem servers, internal cloud, EKS, ECS, and Lambda environments.
+
+Whenever a new application is onboarded, predefined blueprints/templates are used to generate the standard project structure required by all teams. These templates include Jenkinsfile, YAML configuration files, and deployment standards.
+
+The Jenkinsfile mainly acts as an entry point and does not contain the complete pipeline logic. Its primary responsibility is to load the shared libraries and invoke a centralized pipeline runner.
+
+Most of the reusable CI/CD logic is maintained inside shared libraries to ensure standardization and reusability across multiple applications and teams.
+
+Project-specific configurations are maintained inside YAML files. These YAML files contain details such as:
+
+* application ID
+* build type
+* builder node
+* target deployment platform
+* branch-to-environment mapping
+* deployment environment details
+* artifact configuration
+
+When developers push code to Bitbucket, Jenkins gets triggered automatically. Jenkins first checks whether the repository contains a Jenkinsfile, which indicates that the project is pipeline-enabled and buildable.
+
+The Jenkinsfile then imports the shared library and instructs the pipeline runner to read the YAML configuration file. Based on the deployment type and target platform defined in YAML, the pipeline gets dynamically constructed.
+
+For source code management and collaboration, we mainly follow two branching strategies:
+
+* GitFlow branching strategy
+* Trunk-based development
+
+In GitFlow, separate branches such as feature, develop, release, and hotfix branches are used to manage development and releases in a structured manner.
+
+In trunk-based development, developers frequently merge smaller changes into a central main branch to support faster integration and continuous delivery.
+
+For Java-based applications, we generally use Maven and Maven Wrapper for build and packaging activities. Maven Wrapper helps maintain consistent builds by using the project-specific Maven version instead of relying on globally installed Maven versions.
+
+During the build process:
+
+* source code gets compiled
+* dependencies are resolved
+* JAR artifacts are generated
+
+For containerized deployments, Docker images are created using Dockerfiles. The generated artifacts or container images are then pushed to JFrog Artifactory, which acts as a centralized artifact and image repository.
+
+The deployment platforms then pull the required artifact or image versions from JFrog during deployments.
+
+This centralized approach supports:
+
+* artifact versioning
+* rollback capability
+* secure artifact management
+* build once deploy anywhere strategy
+
+We also follow passwordless authentication mechanisms for Jenkins integrations with external platforms and cloud services. Instead of storing static usernames and passwords, secure authentication methods such as IAM roles, service identities, tokens, or temporary credentials are used.
+
+This enables Jenkins to securely interact with platforms such as AWS EKS, ECS, Lambda, Terraform, and JFrog without exposing credentials in the pipeline code.
+
+Overall, this reusable architecture helps maintain standardization, improves security, reduces duplicate pipeline code, and simplifies onboarding and deployment management across teams.
