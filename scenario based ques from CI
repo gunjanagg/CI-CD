@@ -1,0 +1,66 @@
+a why do you use shared jenkins libraries
+
+Shared libraries are used to maintain reusable and standardized CI/CD logic across multiple applications and teams.
+
+Instead of writing the same pipeline code in every project, common functionalities such as build logic, deployment logic, notifications, validations, and security checks are centralized inside shared libraries.
+
+This reduces duplicate code, simplifies maintenance, and ensures all teams follow standard deployment practices.
+
+b what is the purpose of yml file in your pipeline
+
+YAML files are used to maintain project-specific configurations required for pipeline execution.
+
+These configurations include details such as application ID, build type, builder node, deployment platform, branch-to-environment mapping, artifact details, and deployment environments.
+
+The pipeline runner reads these YAML configurations and dynamically constructs the pipeline based on the deployment requirements.
+
+c. how does jenkins securely connect on AWS
+
+In our organization, we follow a passwordless authentication approach for Jenkins integrations.
+
+Instead of storing static usernames and passwords inside pipelines, secure authentication methods such as IAM roles, service identities, tokens, or temporary credentials are used.
+
+This allows Jenkins to securely interact with platforms such as AWS EKS, ECS, Lambda, Terraform, and JFrog while improving security and avoiding hardcoded credentials.
+
+d. why do you store artifacts in jfrog
+JFrog Artifactory is used as a centralized artifact and container image repository.
+
+After the build process completes, generated JAR artifacts or Docker images are pushed to JFrog. Deployment systems then pull the required versions during deployments.
+
+This helps maintain versioning, rollback capability, centralized artifact management, security control, and supports the build once deploy anywhere strategy.
+
+e. difference between gitflow and trunkbased deployment
+
+GitFlow is generally used for structured release management where separate feature, develop, release, and hotfix branches are maintained.
+
+Trunk-based development focuses on frequent integration where developers merge smaller changes regularly into the main branch to support faster CI/CD and continuous delivery.
+
+GitFlow is common in enterprise environments with controlled releases, while trunk-based development is preferred in fast-paced DevOps environments.
+
+
+f. what happens if deployment fails in production
+
+If a production deployment fails, we first analyze pipeline logs, deployment logs, and application logs to identify the root cause.
+
+Depending on the issue, we either fix the configuration/problem and redeploy, or perform a rollback using the previously stable artifact or container image version available in JFrog Artifactory.
+
+Since artifact versions are maintained centrally, rollback becomes faster and safer.
+
+g. what is maven wrapper and why do we use it 
+
+Maven Wrapper is a wrapper script used to maintain consistent builds across environments.
+
+Instead of depending on globally installed Maven versions, the wrapper automatically uses the project-specific Maven version defined for the application.
+
+This helps avoid version mismatch issues between developer systems and CI/CD environments such as Jenkins agents.
+
+h. how are docker images created and deployed
+
+For containerized applications, Docker images are created using Dockerfiles during the CI pipeline.
+
+The application artifact such as a JAR file is packaged inside the Docker image. After the image is built and tagged, it is pushed to JFrog Artifactory.
+
+Deployment platforms such as EKS or ECS then pull the required image version from JFrog and run the containerized application.
+
+
+i. wny do we use reusable blueprints/templates
